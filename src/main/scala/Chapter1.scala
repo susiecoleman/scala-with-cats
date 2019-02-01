@@ -1,11 +1,33 @@
+import cats.Show
+import cats.Eq
+import cats.syntax.show._
+import cats.syntax.eq._
+import cats.instances.option._
+import cats.syntax.option._
+
 object Chapter1 {
   import PrintableInstances._
   import PrintableSyntax._
   def run = {
+
+    val oscar = Cat("oscar", 4)
+    val mog = Cat("mog", 12)
+
+
 //    Using the interface syntax
-    Cat("oscar", 4).print
+    oscar.print
 //    Using the interface Object
     Printable.print(123)
+
+    //Using Cats
+    println(mog.show)
+    println(mog === oscar)
+    println(oscar === oscar)
+
+
+    val optionalOscar = oscar.some
+
+    println(optionalOscar =!= none[Cat])
   }
 }
 
@@ -53,6 +75,12 @@ object PrintableSyntax{
 }
 
 final case class Cat(name: String, age: Int)
+object Cat {
+  implicit val catShow: Show[Cat] = Show.show(cat => s"Hello, I'm ${cat.name} the cat. I'm ${cat.age} years old!")
+
+  implicit val catEq: Eq[Cat] = Eq.instance[Cat]{(cat1, cat2) => cat1.name == cat2.name && cat1.age == cat2.age}
+}
+
 
 /*
 NOTES
