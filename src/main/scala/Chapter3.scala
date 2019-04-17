@@ -6,6 +6,7 @@ object Chapter3 {
 
   def run = {
     import Printable2._
+    import Codec._
 //    val tree: Tree[Int] = Branch(Branch(Leaf(1), Leaf(5)), Leaf(100))
 //    println(tree.map(_ * 2))
 //    println(Tree.branch(Tree.leaf(4), Tree.leaf(4)).map(_ * 3))
@@ -14,6 +15,11 @@ object Chapter3 {
 //    format("hello")
 //    format(false)
 //    println(format(Box("cat")))
+
+//    println(encode(123.4))
+//    println(decode[Double]("123.4"))
+//    println(encode(Box(123.4)))
+//    println(decode[Box[Double]]("123.4"))
 
   }
 
@@ -66,5 +72,33 @@ object Printable2 {
 
   implicit def boxPrintable[A](implicit a: Printable2[A]): Printable2[Box[A]] =
     a.contramap[Box[A]](_.value)
+}
+
+trait Codec[A] {
+
+  self =>
+
+  def encode(value: A): String
+  def decode(value: String): A
+  def imap[B](dec: A => B, enc: B => A): Codec[B] = new Codec[B] {
+    override def encode(value: B): String = self.encode(enc(value))
+
+    override def decode(value: String): B = dec(self.decode(value))
+  }
+}
+
+object Codec {
+
+  def encode[A](value: A)(implicit c: Codec[A]): String = c.encode(value)
+  def decode[A](value: String)(implicit c: Codec[A]): A = c.decode(value)
+
+  implicit val stringCodec: Codec[String] = new Codec[String] {
+    override def encode(value: String): String = value
+    override def decode(value: String): String = value
+  }
+
+  implicit def doubleCodec: Codec[Double] = stringCodec.imap(_.toDouble, _.toString)
+  implicit def boxCodec[A, B](implicit codec: Codec[A]): Codec[Box[A]] = codec.imap[Box[A]](Box(_), _.value)
+
 }
 
