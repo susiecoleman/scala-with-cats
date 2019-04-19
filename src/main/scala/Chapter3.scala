@@ -2,11 +2,14 @@ import scala.language.higherKinds
 import cats.Functor
 import cats.syntax.functor._
 
+// Functors
+
 object Chapter3 {
 
   def run = {
-    import Printable2._
+    import PrintableChapter3._
     import Codec._
+
 //    val tree: Tree[Int] = Branch(Branch(Leaf(1), Leaf(5)), Leaf(100))
 //    println(tree.map(_ * 2))
 //    println(Tree.branch(Tree.leaf(4), Tree.leaf(4)).map(_ * 3))
@@ -43,14 +46,14 @@ object Chapter3 {
 
 }
 
-sealed trait Printable2[A] {
+sealed trait PrintableChapter3[A] {
 
   self =>
 
   def format(x: A): String
 
-  def contramap[B](func: B => A): Printable2[B] = {
-    new Printable2[B] {
+  def contramap[B](func: B => A): PrintableChapter3[B] = {
+    new PrintableChapter3[B] {
       override def format(value: B): String = self.format(func(value))
     }
   }
@@ -58,19 +61,19 @@ sealed trait Printable2[A] {
 
 final case class Box[A](value: A)
 
-object Printable2 {
+object PrintableChapter3 {
 
-  def format[A](value: A)(implicit p: Printable2[A]): String = p.format(value)
+  def format[A](value: A)(implicit p: PrintableChapter3[A]): String = p.format(value)
 
-  implicit val stringPrintable: Printable2[String] = new Printable2[String] {
+  implicit val stringPrintable: PrintableChapter3[String] = new PrintableChapter3[String] {
     override def format(value: String): String = value
   }
 
-  implicit val booleanPrintable: Printable2[Boolean] = new Printable2[Boolean] {
+  implicit val booleanPrintable: PrintableChapter3[Boolean] = new PrintableChapter3[Boolean] {
     override def format(value: Boolean): String = if(value) "yes" else "no"
   }
 
-  implicit def boxPrintable[A](implicit a: Printable2[A]): Printable2[Box[A]] =
+  implicit def boxPrintable[A](implicit a: PrintableChapter3[A]): PrintableChapter3[Box[A]] =
     a.contramap[Box[A]](_.value)
 }
 

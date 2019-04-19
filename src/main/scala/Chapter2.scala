@@ -5,6 +5,7 @@ import cats.instances.option._
 import cats.syntax.semigroup._
 import cats.instances.double._
 
+// Monoids and Semigroups
 
 object Chapter2 {
   def run = {

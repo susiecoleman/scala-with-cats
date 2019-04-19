@@ -5,6 +5,8 @@ import cats.syntax.eq._
 import cats.instances.option._
 import cats.syntax.option._
 
+// Typeclasses
+
 object Chapter1 {
   import PrintableInstances._
   import PrintableSyntax._
